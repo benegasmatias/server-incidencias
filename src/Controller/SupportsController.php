@@ -1,6 +1,6 @@
 <?php
 namespace App\Controller;
-
+use Cake\Datasource\ConnectionManager;
 use App\Controller\AppController;
 
 /**
@@ -20,7 +20,28 @@ class SupportsController extends AppController
     {
         $supports = $this->paginate($this->Supports);
 
-        $this->set(compact('supports'));
+        $this->set([
+            'supports' => $supports,
+            '_serialize' => ['supports']
+        ]);
+    }
+
+    public function viewTodo()
+    {
+        $bd = ConnectionManager::get('default');
+        $query="SELECT * FROM supports 
+        JOIN users on user_id = id_user
+        JOIN offices on office_id=id_office 
+        JOIN problems on problem_id=id_problem 
+        JOIN technicals on technical_id=id_technical";
+        $availabitys=$bd->query($query)->fetchAll('assoc');
+        $this->set([
+            'availabitys'=>$availabitys,
+            '_serialize'=>['availabitys']
+        ]);
+
+       
+
     }
 
     /**
@@ -46,17 +67,18 @@ class SupportsController extends AppController
      */
     public function add()
     {
-        $support = $this->Supports->newEntity();
-        if ($this->request->is('post')) {
-            $support = $this->Supports->patchEntity($support, $this->request->getData());
-            if ($this->Supports->save($support)) {
-                $this->Flash->success(__('The support has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The support could not be saved. Please, try again.'));
+        $this->request->allowMethod(['post', 'put']);
+        $support = $this->Supports->newEntity($this->request->getData());
+        if ($this->Supports->save($support)) {
+            $message = 'Saved';
+        } else {
+            $message = 'Error';
         }
-        $this->set(compact('support'));
+        $this->set([
+            'message' => $message,
+            'support' => $support,
+            '_serialize' => ['message', 'support']
+        ]);
     }
 
     /**

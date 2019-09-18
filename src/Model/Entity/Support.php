@@ -29,13 +29,11 @@ class Support extends Entity
      * @var array
      */
     protected $_accessible = [
-        'date_support' => true,
+        
         'proccedings_support' => true,
         'technical_id' => true,
         'problem_id' => true,
         'user_id' => true,
-        'technical' => true,
-        'problem' => true,
-        'user' => true
+        'description'=>true
     ];
 }

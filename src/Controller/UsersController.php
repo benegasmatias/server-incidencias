@@ -39,6 +39,17 @@ class UsersController extends AppController
         $this->set('user', $user);
     }
 
+    public function getUsersForOffices($id)
+    {
+        $users = $this->Users->find()->where(['office_id' => $id]);
+        
+        $this->set([
+            'users' => $users,
+            '_serialize' => ['users']
+        ]);
+
+    }
+
     /**
      * Add method
      *
