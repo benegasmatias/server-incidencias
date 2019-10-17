@@ -18,6 +18,7 @@ class SupportsController extends AppController
      */
     public function index()
     {
+        $this->paginate=array('limit'=>900);
         $supports = $this->paginate($this->Supports);
 
         $this->set([
@@ -34,10 +35,10 @@ class SupportsController extends AppController
         JOIN offices on office_id=id_office 
         JOIN problems on problem_id=id_problem 
         JOIN technicals on technical_id=id_technical";
-        $availabitys=$bd->query($query)->fetchAll('assoc');
+        $incidencias=$bd->query($query)->fetchAll('assoc');
         $this->set([
-            'availabitys'=>$availabitys,
-            '_serialize'=>['availabitys']
+            'incidencias'=>$incidencias,
+            '_serialize'=>['incidencias']
         ]);
 
        
@@ -54,7 +55,7 @@ class SupportsController extends AppController
     public function view($id = null)
     {
         $support = $this->Supports->get($id, [
-            'contain' => []
+            'contain' => ['problems']
         ]);
 
         $this->set('support', $support);
@@ -88,21 +89,22 @@ class SupportsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id)
     {
-        $support = $this->Supports->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $support = $this->Supports->patchEntity($support, $this->request->getData());
-            if ($this->Supports->save($support)) {
-                $this->Flash->success(__('The support has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The support could not be saved. Please, try again.'));
+        $this->request->allowMethod(['patch', 'post', 'put']);
+        $support2 = $this->Supports->get($id);
+        
+        $support = $this->Supports->patchEntity($support2, $this->request->getData());
+     
+        if ($this->Supports->save($support)) {
+            $msg= 'Saved';
+        } else {
+            $msg = 'Error';
         }
-        $this->set(compact('support'));
+        $this->set([
+            'message' => $msg,
+            '_serialize' => ['message']
+        ]);
     }
 
     /**
@@ -114,14 +116,15 @@ class SupportsController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['delete']);
         $support = $this->Supports->get($id);
-        if ($this->Supports->delete($support)) {
-            $this->Flash->success(__('The support has been deleted.'));
-        } else {
-            $this->Flash->error(__('The support could not be deleted. Please, try again.'));
+        $message = 'Deleted';
+        if (!$this->Supports->delete($support)) {
+            $message = 'Error';
         }
-
-        return $this->redirect(['action' => 'index']);
+        $this->set([
+            'message' => $message,
+            '_serialize' => ['message']
+        ]);
     }
 }

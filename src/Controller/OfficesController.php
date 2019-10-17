@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+
 use App\Controller\AppController;
 
 /**
@@ -19,6 +20,8 @@ class OfficesController extends AppController
      */
     public function index()
     {
+
+
         $offices = $this->paginate($this->Offices);
 
         $this->set([
@@ -42,6 +45,10 @@ class OfficesController extends AppController
 
         $this->set('office', $office);
     }
+
+  
+    
+
 
     /**
      * Add method
