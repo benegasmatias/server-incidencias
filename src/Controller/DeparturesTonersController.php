@@ -2,15 +2,16 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Datasource\ConnectionManager;
 
 /**
- * Cabinets Controller
+ * DeparturesToners Controller
  *
- * @property \App\Model\Table\CabinetsTable $Cabinets
+ * @property \App\Model\Table\DeparturesTonersTable $DeparturesToners
  *
- * @method \App\Model\Entity\Cabinet[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * @method \App\Model\Entity\DeparturesToner[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class CabinetsController extends AppController
+class DeparturesTonersController extends AppController
 {
     /**
      * Index method
@@ -18,36 +19,38 @@ class CabinetsController extends AppController
      * @return \Cake\Http\Response|null
      */
     public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Offices', 'Rams', 'Disks', 'Motherboards']
-        ];
-        $cabinets = $this->paginate($this->Cabinets);
+    { 
+        $bd = ConnectionManager::get('default');
+        $query=" SELECT * FROM `departures_toners` 
+        JOIN offices on office_id=id_office 
+        JOIN toners on departures_toners.toner_id=toners.id_toner
+        JOIN types_toners on toners.type_id=types_toners.id_type";
 
-       
+        
+        $departures=$bd->query($query)->fetchAll('assoc');
+
         $this->set([
-            'cabinets'=>$cabinets,
-            '_serialize'=>['cabinets']
+            'departures'=>$departures,
+            '_serialize'=>['departures']
         ]);
     }
 
+
+   
     /**
      * View method
      *
-     * @param string|null $id Cabinet id.
+     * @param string|null $id Departures Toner id.
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
     {
-        $cabinet = $this->Cabinets->get($id, [
-            'contain' => ['Offices', 'Rams', 'Disks', 'Motherboards']
+        $departuresToner = $this->DeparturesToners->get($id, [
+            'contain' => ['Offices', 'Toners']
         ]);
 
-        $this->set([
-            'cabinet'=>$cabinet,
-            '_serialize'=>['cabinet']
-        ]);
+        $this->set('departuresToner', $departuresToner);
     }
 
     /**
@@ -58,34 +61,33 @@ class CabinetsController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
-        $recipe = $this->Cabinets->newEntity($this->request->getData());
-        if ($this->Cabinets->save($recipe)) {
+        $departure = $this->DeparturesToners->newEntity($this->request->getData());
+        if ($this->DeparturesToners->save($departure)) {
             $message = 'Saved';
         } else {
             $message = 'Error';
         }
         $this->set([
             'message' => $message,
-            'recipe' => $recipe,
-            '_serialize' => ['message', 'recipe']
+            'departure' => $departure,
+            '_serialize' => ['message', 'departure']
         ]);
     }
-
     /**
      * Edit method
      *
-     * @param string|null $id Cabinet id.
+     * @param string|null $id Departures Toner id.
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function edit($id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
-        $cabinet2 = $this->Cabinets->get($id);
+        $departure2 = $this->DeparturesToners->get($id);
         
-        $cabinet = $this->Cabinets->patchEntity($cabinet2, $this->request->getData());
+        $departure = $this->DeparturesToners->patchEntity($departure2, $this->request->getData());
      
-        if ($this->Cabinets->save($cabinet)) {
+        if ($this->DeparturesToners->save($departure)) {
             $msg= 'Saved';
         } else {
             $msg = 'Error';
@@ -95,35 +97,25 @@ class CabinetsController extends AppController
             '_serialize' => ['message']
         ]);
     }
+
     /**
      * Delete method
      *
-     * @param string|null $id Cabinet id.
+     * @param string|null $id Departures Toner id.
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id)
+    public function delete($id = null)
     {
         $this->request->allowMethod(['delete']);
-        $recipe = $this->Cabinets->get($id);
+        $departure = $this->DeparturesToners->get($id);
         $message = 'Deleted';
-        if (!$this->Cabinets->delete($recipe)) {
+        if (!$this->DeparturesToners->delete($departure)) {
             $message = 'Error';
         }
         $this->set([
             'message' => $message,
             '_serialize' => ['message']
         ]);
-    }
-
-    public function getCabinetsForOffices($id)
-    {
-        $cabinets = $this->Cabinets->find()->where(['office_id' => $id]);
-        
-        $this->set([
-            'cabinets' => $cabinets,
-            '_serialize' => ['cabinets']
-        ]);
-
     }
 }

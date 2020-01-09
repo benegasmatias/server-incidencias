@@ -4,14 +4,18 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Toner Entity
+ * DeparturesToner Entity
  *
- * @property int $id_toner
- * @property string $toner_model
+ * @property int $id
+ * @property int $office_id
+ * @property int $toner_id
+ * @property int $quantity
+ * @property \Cake\I18n\FrozenTime $date
  *
- * @property \App\Model\Entity\Printer[] $printers
+ * @property \App\Model\Entity\Office $office
+ * @property \App\Model\Entity\Toner $toner
  */
-class Toner extends Entity
+class DeparturesToner extends Entity
 {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -23,9 +27,8 @@ class Toner extends Entity
      * @var array
      */
     protected $_accessible = [
-        'toner_model' => true,
-        'quantity'=>true,
-        'type_id'=>true,
-        'description'=>true
+        'office_id' => true,
+        'toner_id' => true,
+        'quantity_departures' => true
     ];
 }

@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Datasource\ConnectionManager;
 
 /**
  * Toners Controller
@@ -18,13 +19,22 @@ class TonersController extends AppController
      * @return \Cake\Http\Response|null
      */
     public function index()
-    {  $this->paginate=array('limit'=>100);
-        $toners = $this->paginate($this->Toners);
-
-        $this->set([
-            'toners' =>$toners,
-            '_serialize' => ['toners']
-        ]);
+    {      $bd = ConnectionManager::get('default');
+            $query="SELECT types_toners.id_type as id_type,toners.id_toner,toners.toner_model,types_toners.type,toners.quantity,toners.description FROM toners LEFT JOIN types_toners on toners.type_id=types_toners.id_type";
+    
+            
+            $toners=$bd->query($query)->fetchAll('assoc');
+    
+            $this->set([
+                'toners'=>$toners,
+                '_serialize'=>['toners']
+            ]);
+        
+       
+      
+        
+       
+    
     }
 
     /**
@@ -42,6 +52,8 @@ class TonersController extends AppController
 
         $this->set('toner', $toner);
     }
+
+   
 
     /**
      * Add method
@@ -71,23 +83,23 @@ class TonersController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id)
     {
-        $toner = $this->Toners->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $toner = $this->Toners->patchEntity($toner, $this->request->getData());
-            if ($this->Toners->save($toner)) {
-                $this->Flash->success(__('The toner has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The toner could not be saved. Please, try again.'));
+        $this->request->allowMethod(['patch', 'post', 'put']);
+        $toner2 = $this->Toners->get($id);
+        
+        $toner = $this->Toners->patchEntity($toner2, $this->request->getData());
+     
+        if ($this->Toners->save($toner)) {
+            $msg= 'Saved';
+        } else {
+            $msg = 'Error';
         }
-        $this->set(compact('toner'));
+        $this->set([
+            'message' => $msg,
+            '_serialize' => ['message']
+        ]);
     }
-
     /**
      * Delete method
      *
@@ -97,14 +109,44 @@ class TonersController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $toner = $this->Toners->get($id);
-        if ($this->Toners->delete($toner)) {
-            $this->Flash->success(__('The toner has been deleted.'));
-        } else {
-            $this->Flash->error(__('The toner could not be deleted. Please, try again.'));
+        $this->request->allowMethod(['delete']);
+        $departure = $this->Toners->get($id);
+        $message = 'Deleted';
+        if (!$this->Toners->delete($departure)) {
+            $message = 'Error';
         }
+        $this->set([
+            'message' => $message,
+            '_serialize' => ['message']
+        ]);
+    }
 
-        return $this->redirect(['action' => 'index']);
+
+    public function viewquantity()
+    { 
+        $bd = ConnectionManager::get('default');
+
+        
+        $query="(SELECT * FROM `toners` WHERE quantity !=0)";
+
+       
+         $toners=$bd->query($query)->fetchAll('assoc');
+
+        $this->set([
+            'toners'=>$toners,
+            '_serialize'=>['toners']
+        ]);
+    
+    }
+
+    public function viewModel($model)
+    { 
+        $recipe = $this->Toners->find()->where(['toner_model'=>$model]);
+        $this->set([
+            'model' => $recipe,
+            '_serialize' => ['model']
+        ]);
+
+    
     }
 }

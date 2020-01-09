@@ -108,4 +108,15 @@ class LaptopsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    public function getLaptopsForOffices($id)
+    {
+        $laptop = $this->Laptops->find()->where(['office_id' => $id]);
+        
+        $this->set([
+            'laptops' => $laptop,
+            '_serialize' => ['laptops']
+        ]);
+
+    }
 }

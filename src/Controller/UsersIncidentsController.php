@@ -55,7 +55,9 @@ class UsersIncidentsController extends AppController
     public function add()
     {
         $article = $this->UsersIncidents->newEntity();
+      
         if ($this->request->is('post')) {
+             debug($article);
             $article = $this->UsersIncidents->patchEntity($article, $this->request->getData());
             // You could also do the following
             //$newData = ['user_id' => $this->Auth->user('id')];

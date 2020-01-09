@@ -69,7 +69,9 @@ class SupportsController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
+        
         $support = $this->Supports->newEntity($this->request->getData());
+        debug($support);
         if ($this->Supports->save($support)) {
             $message = 'Saved';
         } else {

@@ -30,13 +30,14 @@ class UsersController extends AppController
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function viewUserForName($name,$id)
     {
-        $user = $this->Users->get($id, [
-            'contain' => []
+        $user = $this->Users->find()->where(['name_user' => $name, 'office_id' => $id]);
+        
+        $this->set([
+            'user' => $user,
+            '_serialize' => ['user']
         ]);
-
-        $this->set('user', $user);
     }
 
     public function getUsersForOffices($id)
@@ -57,6 +58,7 @@ class UsersController extends AppController
      */
     public function add()
     {
+        
         $user = $this->Users->newEntity( $this->request->getData());
         if ($this->request->is('post')) {
             

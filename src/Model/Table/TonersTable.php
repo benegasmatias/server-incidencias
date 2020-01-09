@@ -36,6 +36,11 @@ class TonersTable extends Table
         $this->setDisplayField('id_toner');
         $this->setPrimaryKey('id_toner');
 
+        $this->belongsTo('TypesToners', [
+            'foreignKey' => 'type_id',
+            'joinType' => 'INNER'
+        ]);
+
       
     }
 
@@ -56,7 +61,27 @@ class TonersTable extends Table
             ->maxLength('toner_model', 255)
             ->requirePresence('toner_model', 'create')
             ->notEmptyString('toner_model');
+            $validator
+            ->scalar('quantity')
+            ->maxLength('quantity', 255)
+            ->requirePresence('quantity', 'create')
+            ->notEmptyString('quantity');
+           
+            
+       
 
         return $validator;
+    }
+      /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['type_id'], 'TypesToners'));
+        return $rules;
     }
 }

@@ -43,7 +43,7 @@ class PrintersController extends AppController
         $this->set('printer', $printer);
     }
 
-    public function getPrintsForprinter($id)
+    public function getPrintsForOffice($id)
     {
         $printers = $this->Printers->find()->where(['office_id' => $id]);
         
@@ -53,6 +53,7 @@ class PrintersController extends AppController
         ]);
 
     }
+    
 
     /**
      * Add method
@@ -118,5 +119,16 @@ class PrintersController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function getPrintersForOffices($id)
+    {
+        $printer = $this->Printers->find()->where(['office_id' => $id]);
+        
+        $this->set([
+            'printers' => $printer,
+            '_serialize' => ['printers']
+        ]);
+
     }
 }

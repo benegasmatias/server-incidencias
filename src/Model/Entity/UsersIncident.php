@@ -27,10 +27,7 @@ class UsersIncident extends Entity
     protected $_accessible = [
         'username' => true,
         'password' => true,
-        'role' => true,
-        'created' => true,
-        'modified' => true,
-        'id'=> true
+        'role' => true
     ];
 
     /**

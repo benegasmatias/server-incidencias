@@ -4,13 +4,13 @@ namespace App\Controller;
 use App\Controller\AppController;
 
 /**
- * Cabinets Controller
+ * Events Controller
  *
- * @property \App\Model\Table\CabinetsTable $Cabinets
+ * @property \App\Model\Table\EventsTable $Events
  *
- * @method \App\Model\Entity\Cabinet[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * @method \App\Model\Entity\Event[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class CabinetsController extends AppController
+class EventsController extends AppController
 {
     /**
      * Index method
@@ -19,35 +19,28 @@ class CabinetsController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            'contain' => ['Offices', 'Rams', 'Disks', 'Motherboards']
-        ];
-        $cabinets = $this->paginate($this->Cabinets);
+        $Event = $this->paginate($this->Events);
 
-       
         $this->set([
-            'cabinets'=>$cabinets,
-            '_serialize'=>['cabinets']
+            'Events' => $Event,
+            '_serialize' => ['Events']
         ]);
     }
 
     /**
      * View method
      *
-     * @param string|null $id Cabinet id.
+     * @param string|null $id Event id.
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
     {
-        $cabinet = $this->Cabinets->get($id, [
-            'contain' => ['Offices', 'Rams', 'Disks', 'Motherboards']
+        $event = $this->Events->get($id, [
+            'contain' => []
         ]);
 
-        $this->set([
-            'cabinet'=>$cabinet,
-            '_serialize'=>['cabinet']
-        ]);
+        $this->set('event', $event);
     }
 
     /**
@@ -58,8 +51,8 @@ class CabinetsController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post', 'put']);
-        $recipe = $this->Cabinets->newEntity($this->request->getData());
-        if ($this->Cabinets->save($recipe)) {
+        $recipe = $this->Events->newEntity($this->request->getData());
+        if ($this->Events->save($recipe)) {
             $message = 'Saved';
         } else {
             $message = 'Error';
@@ -70,44 +63,23 @@ class CabinetsController extends AppController
             '_serialize' => ['message', 'recipe']
         ]);
     }
-
     /**
      * Edit method
      *
-     * @param string|null $id Cabinet id.
+     * @param string|null $id Event id.
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function edit($id)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
-        $cabinet2 = $this->Cabinets->get($id);
+        $coso = $this->Events->get($id);
+       
+        $evento = $this->Events->patchEntity($coso, $this->request->getData());
         
-        $cabinet = $this->Cabinets->patchEntity($cabinet2, $this->request->getData());
-     
-        if ($this->Cabinets->save($cabinet)) {
-            $msg= 'Saved';
+        if ($this->Events->save($evento)) {
+            $message = $this->request->getData();
         } else {
-            $msg = 'Error';
-        }
-        $this->set([
-            'message' => $msg,
-            '_serialize' => ['message']
-        ]);
-    }
-    /**
-     * Delete method
-     *
-     * @param string|null $id Cabinet id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id)
-    {
-        $this->request->allowMethod(['delete']);
-        $recipe = $this->Cabinets->get($id);
-        $message = 'Deleted';
-        if (!$this->Cabinets->delete($recipe)) {
             $message = 'Error';
         }
         $this->set([
@@ -116,14 +88,24 @@ class CabinetsController extends AppController
         ]);
     }
 
-    public function getCabinetsForOffices($id)
+    /**
+     * Delete method
+     *
+     * @param string|null $id Event id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function delete($id)
     {
-        $cabinets = $this->Cabinets->find()->where(['office_id' => $id]);
-        
+        $this->request->allowMethod(['delete']);
+        $recipe = $this->Events->get($id);
+        $message = 'Deleted';
+        if (!$this->Events->delete($recipe)) {
+            $message = 'Error';
+        }
         $this->set([
-            'cabinets' => $cabinets,
-            '_serialize' => ['cabinets']
+            'message' => $message,
+            '_serialize' => ['message']
         ]);
-
     }
 }

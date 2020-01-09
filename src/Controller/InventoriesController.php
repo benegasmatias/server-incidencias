@@ -83,7 +83,7 @@ LEFT JOIN cabinets on (cabinets.ip_address is null AND cabinets.name_computer is
 LEFT JOIN printers on (printers.id_printer is null)
  LEFT join toners on (toners.id_toner is null)
 ) 
-ORDER BY `id_office` ASC";
+ORDER BY `id_office` ASC"; 
 
         
         $inventarios=$bd->query($query)->fetchAll('assoc');
@@ -93,6 +93,8 @@ ORDER BY `id_office` ASC";
             '_serialize'=>['inventarios']
         ]);
     }
+
+
    
   
     

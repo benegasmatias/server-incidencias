@@ -108,4 +108,16 @@ class MonitorsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    
+    public function getMonitorsForOffices($id)
+    {
+        $monitor = $this->Monitors->find()->where(['office_id' => $id]);
+        
+        $this->set([
+            'monitors' => $monitor,
+            '_serialize' => ['monitors']
+        ]);
+
+    }
 }
